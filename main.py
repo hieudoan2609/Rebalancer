@@ -73,7 +73,7 @@ for key in portfolio:
         for key in portfolio:
             if (portfolio[key]['uncorrected_btc_value'] < -MINIMUM):
                 buyable = key
-                order = client.create_test_order(
+                order = client.create_order(
                     symbol=portfolio[key]['symbol'],
                     side=Client.SIDE_SELL,
                     type=Client.ORDER_TYPE_MARKET,
