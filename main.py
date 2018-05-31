@@ -15,12 +15,12 @@ MINIMUM = float(client.get_symbol_ticker(symbol='ETHBTC')['price']) / 90
 # portfolio object's final structure
 # portfolio = {
 #     KEY: {
-#         'percentage': int,
-#         'symbol': str,
-#         'uncorrected_btc_value': float,
-#         'uncorrected_amount': float,
+#         'percentage': int[DEFAULT],
+#         'symbol': str[DEFAULT],
 #         'btc_value': float,
-#         'balance': float
+#         'balance': float,
+#         'uncorrected_btc_value': float,
+#         'uncorrected_amount': float
 #     }
 # }
 portfolio = {
