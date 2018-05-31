@@ -1,5 +1,6 @@
 from binance.client import Client
 import os
+import datetime
 
 # connect to binance
 api_key = os.environ.get('binance_api_key')
@@ -15,7 +16,9 @@ MINIMUM = float(client.get_symbol_ticker(symbol='ETHBTC')['price']) / 90
 # portfolio = {
 #     KEY: {
 #         'percentage': int,
+#         'symbol': str,
 #         'uncorrected_btc_value': float,
+#         'uncorrected_amount': float,
 #         'btc_value': float,
 #         'balance': float
 #     }
@@ -59,20 +62,24 @@ for key in portfolio.keys():
     uncorrected_amount = uncorrected_btc_value / btc_rate
 
     portfolio[key]['uncorrected_btc_value'] = uncorrected_btc_value
-    portfolio[key]['uncorrected_amount'] = uncorrected_amount
+    portfolio[key]['uncorrected_amount'] = round(uncorrected_amount, 2)
 
 # rebalance if there is an asset uncorrected enough to buy and an asset uncorrected enough to sell
 for key in portfolio:
     if (portfolio[key]['uncorrected_btc_value'] > MINIMUM):
+        # found a sellable asset, now find a buyable
         sellable = key
 
         for key in portfolio:
-            if (-portfolio[key]['uncorrected_btc_value'] > -MINIMUM):
+            if (portfolio[key]['uncorrected_btc_value'] < -MINIMUM):
                 buyable = key
                 order = client.create_test_order(
                     symbol=portfolio[key]['symbol'],
                     side=Client.SIDE_SELL,
                     type=Client.ORDER_TYPE_MARKET,
-                    quantity=round(portfolio[sellable]['uncorrected_amount'], 2))
+                    quantity=portfolio[sellable]['uncorrected_amount'])
 
-# print(portfolio)
+                # save output to debug.log
+                f = open('./history.log','a')
+                output = str(datetime.datetime.now()) + ": rebalanced"
+                f.write(output + '\n')
