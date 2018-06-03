@@ -1,56 +1,39 @@
 from binance.client import Client
 import os
 import datetime
-import json
-import math
-import threading
 
-# connect to binance
 api_key = os.environ.get('binance_api_key')
 api_secret = os.environ.get('binance_api_secret')
 client = Client(api_key, api_secret)
 
-# portfolio = {
-#     KEY: {
-#         'percentage': int[DEFAULT],
-#         'symbol': str[DEFAULT],
-#         'btc_value': float,
-#         'balance': float,
-#         'uncorrected_btc_value': float,
-#         'uncorrected_amount': float
-#     }
-# }
 portfolio = {
     'NEO': {
         'percentage': 50,
-        'symbol': 'NEOBNB'
+        'symbol': 'NEOBNB',
+        'btc_value': 0.0,
+        'balance': 0.0,
+        'uncorrected_btc_value': 0.0,
+        'uncorrected_amount': 0.0
     },
     'BNB': {
         'percentage': 50,
-        'symbol': 'NEOBNB'
+        'symbol': 'NEOBNB',
+        'btc_value': 0.0,
+        'balance': 0.0,
+        'uncorrected_btc_value': 0.0,
+        'uncorrected_amount': 0.0
     }
 }
 
-# function definitions
 def calculate_uncorrected_value(total_value, current_value, percentage):
     return -(((total_value / 100) * percentage) - current_value)
-
-def roundup(n):
-    return math.ceil(n*100)/100
-
-def rounddown(n):
-    return math.floor(n*100)/100
 
 portfolio_value = 0
 minimum = float(client.get_symbol_ticker(symbol='NEOBTC')['price']) / 100
 
-# retrieve portfolio's total BTC value & individual asset value
+# retrieve asset balance, value and portfolio value
 for key in portfolio:
     portfolio[key]['balance'] = float(client.get_asset_balance(asset=key)['free'])
-
-# temporary code
-# portfolio['ETH']['balance'] = 0.90904152
-# portfolio['BNB']['balance'] = 32.27157798
 
 prices = client.get_all_tickers()
 for price in prices:
@@ -76,7 +59,6 @@ for key in portfolio.keys():
 # rebalance if there is an asset uncorrected enough to buy and an asset uncorrected enough to sell
 for key in portfolio:
     if (portfolio[key]['uncorrected_btc_value'] > minimum):
-        # found a sellable asset, now find a buyable
         sellable = key
 
         for key in portfolio:
@@ -96,10 +78,8 @@ for key in portfolio:
 
                 f.write(output + '\n')
 
-                print(side)
-
 # temporary code
-print(datetime.datetime.now())
-print(minimum)
-for key in portfolio:
-    print(key + ': ' + str(portfolio[key]['uncorrected_btc_value']))
+# print(datetime.datetime.now())
+# print(minimum)
+# for key in portfolio:
+#     print(key + ': ' + str(portfolio[key]['uncorrected_btc_value']))
