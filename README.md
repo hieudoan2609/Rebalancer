@@ -1,3 +1,4 @@
 # TODO
 
-1.  Handling multiple assets (3+)
+* Perhaps change ETH to a cheaper asset like ripple & rebalance every minute?
+* Handling multiple assets (3+)
