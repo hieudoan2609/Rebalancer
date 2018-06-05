@@ -69,18 +69,11 @@ for key in portfolio:
             if (portfolio[key]['uncorrected_btc_value'] < -minimum):
                 buyable = key
                 side = Client.SIDE_BUY if sellable == 'BNB' else Client.SIDE_SELL
-                order = client.create_test_order(
+                order = client.create_order(
                     symbol=portfolio[sellable]['symbol'],
                     side=side,
                     type=Client.ORDER_TYPE_MARKET,
                     quantity=portfolio[sellable]['uncorrected_neo_amount'])
 
-                # write to history.log
                 f = open('./history.log','a')
                 f.write(json.dumps(portfolio) + '\n\n')
-
-# temporary code
-# print(datetime.datetime.now())
-# print(minimum)
-# for key in portfolio:
-#     print(key + ': ' + str(portfolio[key]['uncorrected_btc_value']))
