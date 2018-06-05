@@ -1,6 +1,7 @@
 from binance.client import Client
 import os
 import datetime
+import json
 
 api_key = os.environ.get('binance_api_key')
 api_secret = os.environ.get('binance_api_secret')
@@ -13,7 +14,8 @@ portfolio = {
         'btc_value': 0.0,
         'balance': 0.0,
         'uncorrected_btc_value': 0.0,
-        'uncorrected_amount': 0.0
+        'uncorrected_neo_amount': 0.0,
+        'raw_uncorrected_neo_amount': 0.0
     },
     'BNB': {
         'percentage': 50,
@@ -21,7 +23,8 @@ portfolio = {
         'btc_value': 0.0,
         'balance': 0.0,
         'uncorrected_btc_value': 0.0,
-        'uncorrected_amount': 0.0
+        'uncorrected_neo_amount': 0.0,
+        'raw_uncorrected_neo_amount': 0.0
     }
 }
 
@@ -29,7 +32,7 @@ def calculate_uncorrected_value(total_value, current_value, percentage):
     return -(((total_value / 100) * percentage) - current_value)
 
 portfolio_value = 0
-minimum = float(client.get_symbol_ticker(symbol='NEOBTC')['price']) / 100
+minimum = float(client.get_symbol_ticker(symbol='NEOBTC')['price']) / 20
 
 # retrieve asset balance, value and portfolio value
 for key in portfolio:
@@ -50,11 +53,12 @@ for key in portfolio.keys():
 
     ticker = key + 'BTC'
     uncorrected_btc_value = calculate_uncorrected_value(total_value, current_value, percentage)
-    btc_rate = float(client.get_symbol_ticker(symbol=ticker)['price'])
-    uncorrected_amount = uncorrected_btc_value / btc_rate
+    neobtc_rate = float(client.get_symbol_ticker(symbol='NEOBTC')['price'])
+    uncorrected_neo_amount = uncorrected_btc_value / neobtc_rate
 
     portfolio[key]['uncorrected_btc_value'] = uncorrected_btc_value
-    portfolio[key]['uncorrected_amount'] = round(uncorrected_amount, 2)
+    portfolio[key]['uncorrected_neo_amount'] = round(uncorrected_neo_amount, 2)
+    portfolio[key]['raw_uncorrected_neo_amount'] = uncorrected_neo_amount
 
 # rebalance if there is an asset uncorrected enough to buy and an asset uncorrected enough to sell
 for key in portfolio:
@@ -65,18 +69,15 @@ for key in portfolio:
             if (portfolio[key]['uncorrected_btc_value'] < -minimum):
                 buyable = key
                 side = Client.SIDE_BUY if sellable == 'BNB' else Client.SIDE_SELL
-                order = client.create_order(
-                    symbol=portfolio[key]['symbol'],
+                order = client.create_test_order(
+                    symbol=portfolio[sellable]['symbol'],
                     side=side,
                     type=Client.ORDER_TYPE_MARKET,
-                    quantity=portfolio[sellable]['uncorrected_amount'])
+                    quantity=portfolio[sellable]['uncorrected_neo_amount'])
 
-                # save output to debug.log
+                # write to history.log
                 f = open('./history.log','a')
-
-                output = str(datetime.datetime.now()) + ": SOLD " + str(portfolio[sellable]['uncorrected_amount']) + sellable + " FOR " + buyable
-
-                f.write(output + '\n')
+                f.write(json.dumps(portfolio) + '\n\n')
 
 # temporary code
 # print(datetime.datetime.now())

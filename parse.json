@@ -1,0 +1,20 @@
+{
+  "NEO": {
+    "uncorrected_btc_value": -0.058218797333442,
+    "btc_value": 0.0,
+    "symbol": "NEOBNB",
+    "raw_uncorrected_neo_amount": -8.184844275754534,
+    "uncorrected_neo_amount": -8.18,
+    "percentage": 50,
+    "balance": 0.0
+  },
+  "BNB": {
+    "uncorrected_btc_value": 0.058218797333442,
+    "btc_value": 0.116437594666884,
+    "symbol": "NEOBNB",
+    "raw_uncorrected_neo_amount": 8.184844275754534,
+    "uncorrected_neo_amount": 8.18,
+    "percentage": 50,
+    "balance": 59.44332993
+  }
+}
