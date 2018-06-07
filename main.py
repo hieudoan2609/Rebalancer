@@ -32,7 +32,6 @@ def calculate_uncorrected_value(total_value, current_value, percentage):
     return -(((total_value / 100) * percentage) - current_value)
 
 portfolio_value = 0
-# minimum = ((float(client.get_symbol_ticker(symbol='NEOBTC')['price']) / 100) * 20)
 minimum = 0.001
 
 # retrieve asset balance, value and portfolio value
